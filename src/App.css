@@ -988,3 +988,25 @@ body {
   }
 }
 
+
+/* Logo image fix */
+.logo-img {
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-text {
+  font-family: "Orbitron", monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
