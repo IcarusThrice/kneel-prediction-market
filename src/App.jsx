@@ -155,7 +155,25 @@ function App() {
         `${NETWORK_CONFIG.lcd}/cosmwasm/wasm/v1/contract/${NETWORK_CONFIG.contractAddress}/smart/${query}`
       )
       const data = await response.json()
-      setOpenPredictions(data.data?.predictions || [])
+      const predictions = data.data?.predictions || []
+      
+      // Fetch creator profiles for each prediction
+      const predictionsWithProfiles = await Promise.all(
+        predictions.map(async (pred) => {
+          try {
+            const profileQuery = btoa(JSON.stringify({ get_user_profile: { user: pred.creator } }))
+            const profileRes = await fetch(
+              `${NETWORK_CONFIG.lcd}/cosmwasm/wasm/v1/contract/${NETWORK_CONFIG.contractAddress}/smart/${profileQuery}`
+            )
+            const profileData = await profileRes.json()
+            return { ...pred, creatorProfile: profileData.data?.profile || null }
+          } catch {
+            return { ...pred, creatorProfile: null }
+          }
+        })
+      )
+      
+      setOpenPredictions(predictionsWithProfiles)
     } catch (err) {
       console.error('Failed to fetch predictions:', err)
     }
@@ -776,7 +794,12 @@ function App() {
                         {/* Prophet Side */}
                         <div className="versus-side prophet-side">
                           <div className="side-header">🔮 PROPHET</div>
-                          <div className="side-address">{formatAddress(pred.creator)}</div>
+                          <div className="side-address">
+                            {pred.creatorProfile?.avatar_url && (
+                              <img src={pred.creatorProfile.avatar_url} alt="" className="prophet-avatar" />
+                            )}
+                            <span>{pred.creatorProfile?.display_name || formatAddress(pred.creator)}</span>
+                          </div>
                           <div className="side-pick">{creatorPick}</div>
                           <div className="side-stake">{stakePerSide} LUNC</div>
                         </div>

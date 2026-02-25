@@ -1236,3 +1236,22 @@ body {
     font-size: 1.25rem;
   }
 }
+
+/* Prophet avatar in trials */
+.prophet-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.5rem;
+  border: 2px solid var(--gold);
+}
+
+.side-address {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.75rem;
+}
