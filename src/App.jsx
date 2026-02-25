@@ -741,59 +741,80 @@ function App() {
                   const isCrypto = eventId.includes('lunc-price') || eventId.includes('lunc-burn')
                   const isPricePred = eventId.includes('lunc-price')
                   const isBurnPred = eventId.includes('lunc-burn')
+                  const stakePerSide = formatStake(pred.stake_amount)
+                  const totalPool = formatStake((BigInt(pred.stake_amount) * 2n).toString())
+                  const expiryDate = new Date(pred.expiry_time * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                   
                   return (
-                    <div key={pred.id} className={`trial-card-redesign ${isCrypto ? 'crypto-trial' : ''}`}>
-                      <div className="trial-header-redesign">
-                        <div className="trial-match">
-                          <span className="trial-icon">
+                    <div key={pred.id} className={`trial-card-versus ${isCrypto ? 'crypto-trial' : ''}`}>
+                      {/* Header */}
+                      <div className="trial-header-versus">
+                        <div className="trial-event">
+                          <span className="trial-icon-lg">
                             {isPricePred ? '📈' : isBurnPred ? '🔥' : '⚽'}
                           </span>
-                          <span className="trial-teams-text">
-                            {isCrypto ? (isPricePred ? 'LUNC Price' : 'LUNC Burn') : `${homeTeam} vs ${awayTeam}`}
-                          </span>
+                          <div className="trial-event-info">
+                            <span className="trial-event-name">
+                              {isCrypto ? (isPricePred ? 'LUNC Price Prediction' : 'LUNC Burn Prediction') : `${homeTeam} vs ${awayTeam}`}
+                            </span>
+                            <span className="trial-expiry">⏰ Expires: {expiryDate}</span>
+                          </div>
                         </div>
                         <div className="trial-id-badge">Trial #{pred.id}</div>
                       </div>
                       
-                      <div className="trial-stake-banner">
-                        <span className="stake-label">💰 Stake:</span>
-                        <span className="stake-amount">{formatStake(pred.stake_amount)} LUNC</span>
-                      </div>
-                      
-                      <div className="trial-prophet-section">
-                        <div className="prophet-label">Prophet's Prediction:</div>
-                        <div className="prophet-info">
-                          <span className="prophet-address">{formatAddress(pred.creator)}</span>
-                          <span className="prophet-pick">prophesied <strong>{creatorPick}</strong></span>
+                      {/* Pool Info */}
+                      <div className="trial-pool-info">
+                        <div className="pool-total">
+                          <span className="pool-label">💰 Total Pool</span>
+                          <span className="pool-amount">{totalPool} LUNC</span>
                         </div>
                       </div>
                       
+                      {/* Versus Layout */}
+                      <div className="versus-container">
+                        {/* Prophet Side */}
+                        <div className="versus-side prophet-side">
+                          <div className="side-header">🔮 PROPHET</div>
+                          <div className="side-address">{formatAddress(pred.creator)}</div>
+                          <div className="side-pick">{creatorPick}</div>
+                          <div className="side-stake">{stakePerSide} LUNC</div>
+                        </div>
+                        
+                        {/* VS Divider */}
+                        <div className="versus-divider">
+                          <span className="vs-text">VS</span>
+                        </div>
+                        
+                        {/* Challenger Side */}
+                        <div className="versus-side challenger-side">
+                          <div className="side-header">⚔️ CHALLENGER</div>
+                          <div className="side-address">{isOwnPrediction ? '—' : (wallet ? 'You' : '???')}</div>
+                          <div className="side-pick">{challengerPick}</div>
+                          <div className="side-stake">{stakePerSide} LUNC</div>
+                        </div>
+                      </div>
+                      
+                      {/* Action Area */}
                       {!isOwnPrediction && wallet && (
-                        <div className="challenge-section">
-                          <div className="challenge-info">
-                            <span className="challenge-label">🎯 Your position if you challenge:</span>
-                            <span className="challenge-pick">{challengerPick}</span>
-                          </div>
-                          <button 
-                            className="challenge-btn-redesign"
-                            onClick={() => acceptChallenge(pred.id, pred.stake_amount)}
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? '⏳ Processing...' : `⚔️ Accept Challenge (${formatStake(pred.stake_amount)} LUNC)`}
-                          </button>
-                        </div>
+                        <button 
+                          className="challenge-btn-versus"
+                          onClick={() => acceptChallenge(pred.id, pred.stake_amount)}
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? '⏳ Processing...' : `⚔️ Accept Challenge & Stake ${stakePerSide} LUNC`}
+                        </button>
                       )}
                       
                       {isOwnPrediction && (
-                        <div className="own-prediction-banner">
-                          ✨ Your Prophecy - Awaiting Challenger
+                        <div className="own-prediction-banner-versus">
+                          ✨ Your Prophecy — Awaiting Challenger
                         </div>
                       )}
                       
                       {!wallet && (
-                        <div className="connect-to-challenge">
-                          Connect wallet to challenge this prophet
+                        <div className="connect-prompt-versus">
+                          Connect wallet to accept this challenge
                         </div>
                       )}
                     </div>
