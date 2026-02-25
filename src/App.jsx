@@ -394,6 +394,23 @@ function App() {
         { gasPrice: GasPrice.fromString(NETWORK_CONFIG.gasPrice) }
       )
 
+      // Step 1: Approve KNEEL token spending (3 KNEEL = 3000000 uKNEEL)
+      const kneelFee = "3000000"
+      
+      await client.execute(
+        wallet,
+        NETWORK_CONFIG.kneelToken,
+        { 
+          increase_allowance: { 
+            spender: NETWORK_CONFIG.contractAddress, 
+            amount: kneelFee 
+          } 
+        },
+        "auto",
+        "Approve KNEEL for challenge fee"
+      )
+
+      // Step 2: Accept the challenge
       const result = await client.execute(
         wallet,
         NETWORK_CONFIG.contractAddress,
@@ -708,7 +725,7 @@ function App() {
         {activeTab === 'trials' && (
           <div className="card">
             <h2 className="card-title">⚔️ Open Trials</h2>
-            <p className="card-subtitle">Challenge a prophet by betting the opposite outcome</p>
+            <p className="card-subtitle">Challenge a prophet by prophesying the opposite outcome</p>
             
             {openPredictions.length === 0 ? (
               <p className="empty-state">No open trials available. Cast a prophecy to create one!</p>
@@ -748,7 +765,7 @@ function App() {
                         <div className="prophet-label">Prophet's Prediction:</div>
                         <div className="prophet-info">
                           <span className="prophet-address">{formatAddress(pred.creator)}</span>
-                          <span className="prophet-pick">bet on <strong>{creatorPick}</strong></span>
+                          <span className="prophet-pick">prophesied <strong>{creatorPick}</strong></span>
                         </div>
                       </div>
                       
